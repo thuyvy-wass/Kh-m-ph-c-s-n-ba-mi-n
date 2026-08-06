@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám Phá Đặc Sản & Di Tích 3 Miền</title>
+    <!-- Nhúng font chữ Quicksand hỗ trợ tiếng Việt, nét chữ bo tròn dễ thương cho học sinh tiểu học -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-bac: #3b82f6;
+            --color-bac-light: #eff6ff;
+            --color-trung: #f97316;
+            --color-trung-light: #fff7ed;
+            --color-nam: #22c55e;
+            --color-nam-light: #f0fdf4;
+            --primary-font: 'Quicksand', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--primary-font);
+            background-color: #f0f9ff;
+            background-image: radial-gradient(#e0f2fe 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #334155;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #0369a1;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #bae6fd;
+        }
+
+        .instruction {
+            font-size: 1.1rem;
+            color: #475569;
+            background-color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: inline-block;
+            border: 2px dashed #cbd5e1;
+        }
+
+        /* Khung chứa 3 miền */
+        .regions-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .regions-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .region-box {
+            border-radius: 24px;
+            padding: 20px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            border: 4px solid transparent;
+        }
+
+        .region-box.drag-over {
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Định dạng riêng từng miền */
+        .region-bac {
+            background-color: var(--color-bac-light);
+            border-color: var(--color-bac);
+        }
+        .region-bac .region-title {
+            color: var(--color-bac);
+        }
+
+        .region-trung {
+            background-color: var(--color-trung-light);
+            border-color: var(--color-trung);
+        }
+        .region-trung .region-title {
+            color: var(--color-trung);
+        }
+
+        .region-nam {
+            background-color: var(--color-nam-light);
+            border-color: var(--color-nam);
+        }
+        .region-nam .region-title {
+            color: var(--color-nam);
+        }
+
+        .region-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .region-counter {
+            font-size: 0.95rem;
+            font-weight: bold;
+            background-color: #ffffff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+
+        .slots-area {
+            width: 100%;
+            flex-grow: 1;
+            border-radius: 16px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 2px dashed rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+            align-content: flex-start;
+            min-height: 120px;
+        }
+
+        /* Khung chứa các thẻ bài chưa phân loại */
+        .cards-deck-section {
+            width: 100%;
+            max-width: 1000px;
+            background-color: #ffffff;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .deck-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .cards-deck {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            min-height: 120px;
+            padding: 10px;
+        }
+
+        /* Định dạng thẻ bài */
+        .card {
+            background-color: #ffffff;
+            border: 3px solid #cbd5e1;
+            border-bottom-width: 6px;
+            border-radius: 18px;
+            padding: 12px 18px;
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+            max-width: 150px;
+            text-align: center;
+        }
+
+        .card:active {
+            cursor: grabbing;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #94a3b8;
+            box-shadow: 0 8px 12px -1px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Trạng thái thẻ bài được chọn (cho lối chơi click-to-select) */
+        .card.selected {
+            border-color: #a855f7;
+            background-color: #faf5ff;
+            animation: pulse 1.2s infinite ease-in-out;
+            transform: scale(1.05);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0px rgba(168, 85, 247, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(168, 85, 247, 0); }
+        }
+
+        /* Thẻ đã được phân loại đúng */
+        .card.matched {
+            cursor: default;
+            transform: scale(0.9) !important;
+            border: 2px solid #cbd5e1;
+            border-bottom-width: 2px;
+            box-shadow: none;
+            background-color: #f8fafc;
+            opacity: 0.85;
+        }
+
+        .card-emoji {
+            font-size: 2rem;
+        }
+
+        .card-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1e293b;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* Hiệu ứng rung lắc khi chọn sai */
+        .shake {
+            animation: shakeAnim 0.5s ease-in-out;
+        }
+
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            15%, 45%, 75% { transform: translateX(-10px); }
+            30%, 60%, 90% { transform: translateX(10px); }
+        }
+
+        /* Hiệu ứng các hạt pháo hoa nhỏ khi trả lời đúng */
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+            animation: explode 0.8s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--dx), var(--dy)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Popup chúc mừng chiến thắng */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background-color: #ffffff;
+            border-radius: 32px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 6px solid #facc15;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-emoji {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-15px); }
+        }
+
+        .modal-title {
+            color: #eab308;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .modal-text {
+            font-size: 1.2rem;
+            color: #475569;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .btn-restart {
+            background-color: #22c55e;
+            color: #ffffff;
+            font-family: var(--primary-font);
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 12px 30px;
+            border: none;
+            border-bottom: 4px solid #16a34a;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-restart:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .btn-restart:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🗺️ Bản Đồ Địa Lý Nhí</h1>
+        <div class="instruction">
+            💡 <strong>Cách chơi:</strong> Nhấp chọn một Thẻ bài ở dưới rồi nhấp vào Hộp miền tương ứng, hoặc kéo thả thẻ bài trực tiếp vào hộp nhé!
+        </div>
+    </header>
+
+    <!-- Khu vực 3 hộp chứa -->
+    <main class="regions-container">
+        <!-- Miền Bắc -->
+        <div class="region-box region-bac" data-group="bac">
+            <div class="region-title">🌸 Miền Bắc</div>
+            <div class="region-counter">Đã xếp: <span class="score" id="score-bac">0</span></div>
+            <div class="slots-area" id="slot-bac"></div>
+        </div>
+
+        <!-- Miền Trung -->
+        <div class="region-box region-trung" data-group="trung">
+            <div class="region-title">☀️ Miền Trung</div>
+            <div class="region-counter">Đã xếp: <span class="score" id="score-trung">0</span></div>
+            <div class="slots-area" id="slot-trung"></div>
+        </div>
+
+        <!-- Miền Nam -->
+        <div class="region-box region-nam" data-group="nam">
+            <div class="region-title">🌾 Miền Nam</div>
+            <div class="region-counter">Đã xếp: <span class="score" id="score-nam">0</span></div>
+            <div class="slots-area" id="slot-nam"></div>
+        </div>
+    </main>
+
+    <!-- Khu vực các thẻ bài -->
+    <section class="cards-deck-section">
+        <div class="deck-title">Thẻ Địa Danh & Đặc Sản</div>
+        <div class="cards-deck" id="cardsDeck"></div>
+    </section>
+
+    <!-- Màn hình chúc mừng (Pop-up) -->
+    <div class="overlay" id="victoryOverlay">
+        <div class="modal">
+            <div class="modal-emoji">🏆</div>
+            <h2 class="modal-title">Chúc Mừng!</h2>
+            <p class="modal-text">Xuất sắc! Bạn đã hoàn thành xuất sắc thử thách và trở thành một <strong>Nhà địa lý nhí</strong> tài ba!</p>
+            <button class="btn-restart" onclick="resetGame()">Chơi Lại</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CẤU HÌNH DỮ LIỆU BÀI HỌC
+        // Bạn có thể chỉnh sửa mảng này để đổi sang nội dung khác
+        // - id: Số định danh duy nhất cho mỗi thẻ bài
+        // - name: Tên hiển thị trên thẻ bài
+        // - emoji: Biểu tượng minh họa dễ thương cho học sinh dễ nhận diện
+        // - group: Miền tương ứng ('bac', 'trung', 'nam')
+        // - desc: Chú thích nhỏ/địa phương của di tích, đặc sản
+        // ==========================================
+        const itemsData = [
+            { id: 1, name: "Tháp Rùa", emoji: "🐢", group: "bac", desc: "Hồ Gươm - Hà Nội" },
+            { id: 2, name: "Phở Hà Nội", emoji: "🍜", group: "bac", desc: "Món ăn truyền thống" },
+            { id: 3, name: "Vịnh Hạ Long", emoji: "⛵", group: "bac", desc: "Kỳ quan Quảng Ninh" },
+            { id: 4, name: "Đại Nội Huế", emoji: "🏰", group: "trung", desc: "Cố đô cổ kính" },
+            { id: 5, name: "Mì Quảng", emoji: "🍲", group: "trung", desc: "Sợi mì đậm đà" },
+            { id: 6, name: "Động Phong Nha", emoji: "⛰️", group: "trung", desc: "Kỳ quan Quảng Bình" },
+            { id: 7, name: "Chợ Nổi Cái Răng", emoji: "🛶", group: "nam", desc: "Sông nước Cần Thơ" },
+            { id: 8, name: "Cơm Tấm", emoji: "🍛", group: "nam", desc: "Đặc sản Sài Gòn" },
+            { id: 9, name: "Bến Nhà Rồng", emoji: "⚓", group: "nam", desc: "Địa danh lịch sử" }
+        ];
+
+        // Biến lưu trữ trạng thái thẻ đang được chọn (cho cơ chế Click-to-Select)
+        let selectedCardElement = null;
+
+        // Khởi tạo hệ thống Âm thanh bằng Web Audio API (Tránh dùng file âm thanh rời bên ngoài)
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Hàm phát âm thanh
+        function playSound(type) {
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                // Tiếng "Ting" vui tai, âm điệu cao dần
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Nốt C5
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // Nốt A5
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            } else if (type === 'wrong') {
+                // Tiếng "Bụp" trầm, giảm dần thể hiện chọn sai
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.25);
+            } else if (type === 'victory') {
+                // Điệp khúc ngắn chúc mừng khi chiến thắng
+                const tempo = 0.12;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // Hợp âm Đô Trưởng dâng lên
+                notes.forEach((freq, index) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(freq, audioCtx.currentTime + index * tempo);
+                    g.gain.setValueAtTime(0.1, audioCtx.currentTime + index * tempo);
+                    g.gain.exponentialRampToValueAtTime(0.005, audioCtx.currentTime + index * tempo + 0.3);
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.start(audioCtx.currentTime + index * tempo);
+                    o.stop(audioCtx.currentTime + index * tempo + 0.3);
+                });
+            }
+        }
+
+        // Tạo hạt pháo hoa nhỏ khi trả lời đúng
+        function createConfetti(x, y) {
+            const colors = ['#facc15', '#f43f5e', '#3b82f6', '#22c55e', '#a855f7', '#fb923c'];
+            const container = document.body;
+            
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Hướng di chuyển ngẫu nhiên
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 40 + Math.random() * 80;
+                const dx = Math.cos(angle) * distance;
+                const dy = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--dx', `${dx}px`);
+                particle.style.setProperty('--dy', `${dy}px`);
+                
+                container.appendChild(particle);
+                
+                // Xóa hạt sau khi hoàn thành animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 800);
+            }
+        }
+
+        // Thuật toán trộn ngẫu nhiên danh sách thẻ bài (Fisher-Yates Shuffle)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Hàm tạo và hiển thị các thẻ bài ra giao diện
+        function renderCards() {
+            const deck = document.getElementById('cardsDeck');
+            deck.innerHTML = '';
+            
+            // Xáo trộn thẻ bài trước khi bày ra
+            const shuffledItems = shuffle([...itemsData]);
+
+            shuffledItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.id = `card-${item.id}`;
+                card.draggable = true;
+                card.dataset.group = item.group;
+
+                card.innerHTML = `
+                    <div class="card-emoji">${item.emoji}</div>
+                    <div class="card-name">${item.name}</div>
+                    <div class="card-desc">${item.desc}</div>
+                `;
+
+                // --- Đăng ký sự kiện Kéo Thả (Drag & Drop) ---
+                card.addEventListener('dragstart', (e) => {
+                    initAudio();
+                    card.classList.add('selected');
+                    e.dataTransfer.setData('text/plain', card.id);
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('selected');
+                });
+
+                // --- Đăng ký sự kiện Nhấp Chuột (Click to Select) ---
+                card.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Tránh lan truyền sự kiện ra ngoài
+                    initAudio();
+
+                    // Nếu thẻ bài đã được phân loại đúng, bỏ qua click
+                    if (card.classList.contains('matched')) return;
+
+                    if (selectedCardElement) {
+                        selectedCardElement.classList.remove('selected');
+                    }
+
+                    if (selectedCardElement === card) {
+                        // Nhấp lần hai vào cùng 1 thẻ sẽ hủy lựa chọn
+                        selectedCardElement = null;
+                    } else {
+                        selectedCardElement = card;
+                        card.classList.add('selected');
+                    }
+                });
+
+                deck.appendChild(card);
+            });
+        }
+
+        // Xử lý logic khi ghép đúng thẻ vào hộp miền
+        function handleCorrectMatch(cardEl, regionBox, x, y) {
+            const slotArea = regionBox.querySelector('.slots-area');
+            
+            // Khóa thẻ bài: Không cho phép kéo thả hay lựa chọn lại nữa
+            cardEl.draggable = false;
+            cardEl.classList.remove('selected');
+            cardEl.classList.add('matched');
+            
+            // Di chuyển thẻ bài vào trong hộp miền tương ứng
+            slotArea.appendChild(cardEl);
+            selectedCardElement = null;
+
+            // Phát tiếng tinh và bắn pháo hoa ăn mừng
+            playSound('correct');
+            createConfetti(x, y);
+
+            // Cập nhật điểm của hộp chứa
+            updateScores();
+
+            // Kiểm tra xem đã hoàn thành toàn bộ bài tập chưa
+            checkVictory();
+        }
+
+        // Xử lý logic khi chọn sai miền
+        function handleWrongMatch(cardEl) {
+            playSound('wrong');
+            cardEl.classList.remove('selected');
+            selectedCardElement = null;
+            
+            // Tạo hiệu ứng lắc lư phản hồi trực quan
+            cardEl.classList.add('shake');
+            setTimeout(() => {
+                cardEl.classList.remove('shake');
+            }, 500);
+        }
+
+        // Cập nhật lại điểm số hiện thị trên từng hộp miền
+        function updateScores() {
+            const regions = ['bac', 'trung', 'nam'];
+            regions.forEach(reg => {
+                const count = document.getElementById(`slot-${reg}`).children.length;
+                document.getElementById(`score-${reg}`).innerText = count;
+            });
+        }
+
+        // Kiểm tra điều kiện hoàn thành bài học
+        function checkVictory() {
+            const totalCardsInDeck = document.getElementById('cardsDeck').children.length;
+            if (totalCardsInDeck === 0) {
+                // Tất cả các thẻ đã được xếp đúng chỗ
+                setTimeout(() => {
+                    playSound('victory');
+                    document.getElementById('victoryOverlay').classList.add('active');
+                }, 600);
+            }
+        }
+
+        // Cài đặt các vùng nhận tương tác kéo thả và nhấp chuột cho các hộp miền
+        function initRegions() {
+            const regions = document.querySelectorAll('.region-box');
+
+            regions.forEach(region => {
+                // Thả kéo: Cho phép thả các thẻ vào miền
+                region.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    region.classList.add('drag-over');
+                });
+
+                region.addEventListener('dragleave', () => {
+                    region.classList.remove('drag-over');
+                });
+
+                region.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    region.classList.remove('drag-over');
+                    
+                    const cardId = e.dataTransfer.getData('text/plain');
+                    const cardEl = document.getElementById(cardId);
+                    
+                    if (!cardEl) return;
+
+                    const cardGroup = cardEl.dataset.group;
+                    const regionGroup = region.dataset.group;
+
+                    if (cardGroup === regionGroup) {
+                        handleCorrectMatch(cardEl, region, e.clientX, e.clientY);
+                    } else {
+                        handleWrongMatch(cardEl);
+                    }
+                });
+
+                // Nhấp chuột: Nhấp vào hộp miền khi có thẻ đang được chọn
+                region.addEventListener('click', (e) => {
+                    if (selectedCardElement) {
+                        const cardGroup = selectedCardElement.dataset.group;
+                        const regionGroup = region.dataset.group;
+
+                        // Xác định tọa độ phát pháo hoa tại nơi nhấp chuột
+                        const rect = region.getBoundingClientRect();
+                        const x = e.clientX || (rect.left + rect.width / 2);
+                        const y = e.clientY || (rect.top + rect.height / 2);
+
+                        if (cardGroup === regionGroup) {
+                            handleCorrectMatch(selectedCardElement, region, x, y);
+                        } else {
+                            handleWrongMatch(selectedCardElement);
+                        }
+                    }
+                });
+            });
+
+            // Nếu người dùng nhấn ra ngoài khoảng trống nền, hủy chọn thẻ đang có
+            document.body.addEventListener('click', () => {
+                if (selectedCardElement) {
+                    selectedCardElement.classList.remove('selected');
+                    selectedCardElement = null;
+                }
+            });
+        }
+
+        // Khởi động lại trò chơi từ đầu
+        function resetGame() {
+            document.getElementById('victoryOverlay').classList.remove('active');
+            
+            // Xóa sạch các thẻ đang nằm trong các hộp miền
+            document.getElementById('slot-bac').innerHTML = '';
+            document.getElementById('slot-trung').innerHTML = '';
+            document.getElementById('slot-nam').innerHTML = '';
+
+            // Tạo mới lại các thẻ và trộn ngẫu nhiên
+            renderCards();
+            updateScores();
+        }
+
+        // Chạy khởi tạo khi trang web sẵn sàng
+        window.onload = () => {
+            renderCards();
+            initRegions();
+        };
+    </script>
+</body>
+</html>
